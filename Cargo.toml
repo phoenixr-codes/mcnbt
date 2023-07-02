@@ -1,0 +1,13 @@
+[package]
+name = "mcnbt"
+version = "0.1.0"
+authors = ["Jonas da Silva"]
+edition = "2021"
+description = "Read and write NBT"
+repository = "https://github.com/phoenixr-codes/mcnbt"
+license = "MIT"
+keywords = ["minecraft", "nbt", "parser"]
+categories = []
+
+[dependencies]
+residua-mutf8 = "2.0.0"
