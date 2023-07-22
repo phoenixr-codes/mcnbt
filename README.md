@@ -2,8 +2,8 @@
 
 Read and write NBT files.[^1]
 
-![docs.rs](https://img.shields.io/docsrs/mcnbt/latest)
-![Crates.io](https://img.shields.io/crates/v/mcnbt)
+[![docs.rs](https://img.shields.io/docsrs/mcnbt/latest)](https://docs.rs/mcnbt/latest/mcnbt/)
+[![Crates.io](https://img.shields.io/crates/v/mcnbt)](https://crates.io/crates/mcnbt)
 
 [^1]: Reading not yet supported.
 
