@@ -3,7 +3,6 @@ extern crate mcnbt;
 use mcnbt::{ByteOrder, Tag};
 
 fn main() {
-    /*
     let structure = Tag::Compound(
         Some(""),
         &[
@@ -14,7 +13,7 @@ fn main() {
             ),
         ],
     );
-    */
-    let structure = Tag::Compound(Some(""), &[Tag::Int(Some("a"), 1)]);
-    println!("{:#?}", structure.as_bytes(ByteOrder::LittleEndian));
+
+    println!("Bytes\n{:#?}", structure.as_bytes(ByteOrder::LittleEndian));
+    println!("Pretty\n{:#?}", structure);
 }
