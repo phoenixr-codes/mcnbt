@@ -55,5 +55,5 @@ let tag = Tag::Compound(
         ]),
     ],
 );
-println!("{:#?}", tag.as_bytes());
+println!("{:#?}", tag.as_bytes(ByteOrder::LittleEndian));
 ```
