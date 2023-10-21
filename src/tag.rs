@@ -6,6 +6,7 @@ pub type Name<'a> = Option<&'a str>;
 /// a payload. The name is absent when it is used within a [List].
 ///
 /// The tag `TAG_End` is not available because it is handled by the program.
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Tag<'a> {
     /// A signed integral type. Sometimes used for booleans.
     Byte(Name<'a>, i8),
@@ -181,4 +182,26 @@ impl Tag<'_> {
         };
         buf
     }
+}
+
+/// Wraps its tags in an unnamed compound.
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, nbt};
+///
+/// assert_eq!(
+///     nbt!(Tag::Int(Some("foo"), 42), Tag::Long(Some("bar"), 12)),
+///     Tag::Compound(
+///         Some(""),
+///         &[Tag::Int(Some("foo"), 42), Tag::Long(Some("bar"), 12)]
+///     )
+/// );
+/// ```
+#[macro_export]
+macro_rules! nbt {
+    ($($data:expr),* $(,)?) => {
+        Tag::Compound(Some(""), &[$($data),*])
+    };
 }

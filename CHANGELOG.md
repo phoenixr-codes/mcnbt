@@ -4,7 +4,9 @@
 
 ### Added
 
-- Add `mcnbt::byte_order::ByteOrder::bytes`
+- Add `nbt` macro.
+- Add common traits for `mcnbt::tag::Tag`.
+- Add `mcnbt::byte_order::ByteOrder::bytes`.
 
 
 ## [0.1.0] - 2023-07-02
