@@ -63,124 +63,22 @@ impl Tag<'_> {
     fn bytes_name(&self, byte_order: ByteOrder) -> Result<Vec<u8>, ()> {
         let mut buf = vec![];
         match *self {
-            Tag::Byte(name, _) => {
+            Tag::Byte(name, _)
+            | Tag::Short(name, _)
+            | Tag::Int(name, _)
+            | Tag::Long(name, _)
+            | Tag::Float(name, _)
+            | Tag::Double(name, _)
+            | Tag::ByteArray(name, _)
+            | Tag::String(name, _)
+            | Tag::List(name, _)
+            | Tag::Compound(name, _)
+            | Tag::IntArray(name, _)
+            | Tag::LongArray(name, _) => {
                 let n = name.ok_or(())?;
                 let n = mutf8::encode(n).into_owned();
                 let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::Short(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::Int(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::Long(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::Float(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::Double(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::ByteArray(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::String(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::List(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::Compound(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::IntArray(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
-                buf.extend(n);
-            }
-            Tag::LongArray(name, _) => {
-                let n = name.ok_or(())?;
-                let n = mutf8::encode(n).into_owned();
-                let len: u16 = n.len().try_into().expect("name too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
+                buf.extend(byte_order.bytes(len));
                 buf.extend(n);
             }
         };
@@ -191,54 +89,18 @@ impl Tag<'_> {
     fn bytes_id(&self, byte_order: ByteOrder) -> Vec<u8> {
         let mut buf = vec![];
         buf.extend(match *self {
-            Tag::Byte(_, _) => match byte_order {
-                ByteOrder::BigEndian => 1_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 1_i8.to_le_bytes(),
-            },
-            Tag::Short(_, _) => match byte_order {
-                ByteOrder::BigEndian => 2_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 2_i8.to_le_bytes(),
-            },
-            Tag::Int(_, _) => match byte_order {
-                ByteOrder::BigEndian => 3_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 3_i8.to_le_bytes(),
-            },
-            Tag::Long(_, _) => match byte_order {
-                ByteOrder::BigEndian => 4_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 4_i8.to_le_bytes(),
-            },
-            Tag::Float(_, _) => match byte_order {
-                ByteOrder::BigEndian => 5_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 5_i8.to_le_bytes(),
-            },
-            Tag::Double(_, _) => match byte_order {
-                ByteOrder::BigEndian => 6_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 6_i8.to_le_bytes(),
-            },
-            Tag::ByteArray(_, _) => match byte_order {
-                ByteOrder::BigEndian => 7_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 7_i8.to_le_bytes(),
-            },
-            Tag::String(_, _) => match byte_order {
-                ByteOrder::BigEndian => 8_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 8_i8.to_le_bytes(),
-            },
-            Tag::List(_, _) => match byte_order {
-                ByteOrder::BigEndian => 9_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 9_i8.to_le_bytes(),
-            },
-            Tag::Compound(_, _) => match byte_order {
-                ByteOrder::BigEndian => 10_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 10_i8.to_le_bytes(),
-            },
-            Tag::IntArray(_, _) => match byte_order {
-                ByteOrder::BigEndian => 11_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 11_i8.to_le_bytes(),
-            },
-            Tag::LongArray(_, _) => match byte_order {
-                ByteOrder::BigEndian => 12_i8.to_be_bytes(),
-                ByteOrder::LittleEndian => 12_i8.to_le_bytes(),
-            },
+            Tag::Byte(..) => byte_order.bytes(1_i8),
+            Tag::Short(..) => byte_order.bytes(2_i8),
+            Tag::Int(..) => byte_order.bytes(3_i8),
+            Tag::Long(..) => byte_order.bytes(4_i8),
+            Tag::Float(..) => byte_order.bytes(5_i8),
+            Tag::Double(..) => byte_order.bytes(6_i8),
+            Tag::ByteArray(..) => byte_order.bytes(7_i8),
+            Tag::String(..) => byte_order.bytes(8_i8),
+            Tag::List(..) => byte_order.bytes(9_i8),
+            Tag::Compound(..) => byte_order.bytes(10_i8),
+            Tag::IntArray(..) => byte_order.bytes(11_i8),
+            Tag::LongArray(..) => byte_order.bytes(12_i8),
         });
         buf
     }
@@ -247,60 +109,28 @@ impl Tag<'_> {
     fn bytes_payload(&self, byte_order: ByteOrder) -> Vec<u8> {
         let mut buf = vec![];
         match *self {
-            Tag::Byte(_, payload) => buf.extend(match byte_order {
-                ByteOrder::BigEndian => payload.to_be_bytes(),
-                ByteOrder::LittleEndian => payload.to_le_bytes(),
-            }),
-
-            Tag::Short(_, payload) => buf.extend(match byte_order {
-                ByteOrder::BigEndian => payload.to_be_bytes(),
-                ByteOrder::LittleEndian => payload.to_le_bytes(),
-            }),
-
-            Tag::Int(_, payload) => buf.extend(match byte_order {
-                ByteOrder::BigEndian => payload.to_be_bytes(),
-                ByteOrder::LittleEndian => payload.to_le_bytes(),
-            }),
-
-            Tag::Long(_, payload) => buf.extend(match byte_order {
-                ByteOrder::BigEndian => payload.to_be_bytes(),
-                ByteOrder::LittleEndian => payload.to_le_bytes(),
-            }),
-
-            Tag::Float(_, payload) => buf.extend(match byte_order {
-                ByteOrder::BigEndian => payload.to_be_bytes(),
-                ByteOrder::LittleEndian => payload.to_le_bytes(),
-            }),
-
-            Tag::Double(_, payload) => buf.extend(match byte_order {
-                ByteOrder::BigEndian => payload.to_be_bytes(),
-                ByteOrder::LittleEndian => payload.to_le_bytes(),
-            }),
+            Tag::Byte(_, payload) => buf.extend(byte_order.bytes(payload)),
+            Tag::Short(_, payload) => buf.extend(byte_order.bytes(payload)),
+            Tag::Int(_, payload) => buf.extend(byte_order.bytes(payload)),
+            Tag::Long(_, payload) => buf.extend(byte_order.bytes(payload)),
+            Tag::Float(_, payload) => buf.extend(byte_order.bytes(payload)),
+            Tag::Double(_, payload) => buf.extend(byte_order.bytes(payload)),
 
             Tag::ByteArray(_, payload) => {
                 // length of array
                 let len: i32 = payload.len().try_into().expect("byte array too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
+                buf.extend(byte_order.bytes(len));
 
                 // content of array
                 for byte in payload {
-                    buf.extend(match byte_order {
-                        ByteOrder::BigEndian => byte.to_be_bytes(),
-                        ByteOrder::LittleEndian => byte.to_le_bytes(),
-                    });
+                    buf.extend(byte_order.bytes(*byte));
                 }
             }
 
             Tag::String(_, payload) => {
                 let string = mutf8::encode(payload);
                 let len: u16 = string.len().try_into().expect("string too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
+                buf.extend(byte_order.bytes(len));
                 buf.extend(string.into_owned());
             }
 
@@ -312,10 +142,7 @@ impl Tag<'_> {
 
                 // length of list
                 let len: i32 = payload.len().try_into().expect("list too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
+                buf.extend(byte_order.bytes(len));
 
                 // content of list
                 for byte in payload {
@@ -327,43 +154,28 @@ impl Tag<'_> {
                 for tag in payload {
                     buf.extend(tag.as_bytes(byte_order));
                 }
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => 0_i8.to_be_bytes(),
-                    ByteOrder::LittleEndian => 0_i8.to_le_bytes(),
-                });
+                buf.extend(byte_order.bytes(0_i8));
             }
 
             Tag::IntArray(_, payload) => {
                 // length of array
                 let len: i32 = payload.len().try_into().expect("int array too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
+                buf.extend(byte_order.bytes(len));
 
                 // content of array
                 for int in payload {
-                    buf.extend(match byte_order {
-                        ByteOrder::BigEndian => int.to_be_bytes(),
-                        ByteOrder::LittleEndian => int.to_le_bytes(),
-                    });
+                    buf.extend(byte_order.bytes(*int));
                 }
             }
 
             Tag::LongArray(_, payload) => {
                 // length of array
                 let len: i32 = payload.len().try_into().expect("long array too big");
-                buf.extend(match byte_order {
-                    ByteOrder::BigEndian => len.to_be_bytes(),
-                    ByteOrder::LittleEndian => len.to_le_bytes(),
-                });
+                buf.extend(byte_order.bytes(len));
 
                 // content of array
                 for long in payload {
-                    buf.extend(match byte_order {
-                        ByteOrder::BigEndian => long.to_be_bytes(),
-                        ByteOrder::LittleEndian => long.to_le_bytes(),
-                    });
+                    buf.extend(byte_order.bytes(*long));
                 }
             }
         };
