@@ -10,5 +10,11 @@ keywords = ["minecraft", "nbt", "parser"]
 categories = []
 
 [dependencies]
+nom = {version = "7.1.3", optional = true}
 num-traits = "0.2.17"
 residua-mutf8 = "2.0.0"
+thiserror = "1.0.50"
+
+[features]
+default = ["read"]
+read = ["nom"]
