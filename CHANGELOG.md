@@ -4,6 +4,8 @@
 
 ### Added
 
+- Add several helper macros for creating tags.
+- Add discriminants to `mcnbt::Tag`.
 - Add `mcnbt::errors` module.
 
 ### Changed

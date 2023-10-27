@@ -56,7 +56,7 @@ println!("{:#?}", tag.to_bytes(ByteOrder::LittleEndian));
 
 ## Resources
 
-- https://wiki.vg/NBT
-- https://minecraft.wiki/w/NBT_format#Binary_format
-- https://wiki.bedrock.dev/nbt/nbt-in-depth.html
+- <https://wiki.vg/NBT>
+- <https://minecraft.wiki/w/NBT_format#Binary_format>
+- <https://wiki.bedrock.dev/nbt/nbt-in-depth.html>
 

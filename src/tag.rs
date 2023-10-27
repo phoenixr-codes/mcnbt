@@ -5,46 +5,47 @@ use crate::parser;
 pub type Name = Option<String>;
 
 /// A tag is an individual part of the data tree. A tag consists of a name and
-/// a payload. The name is absent when it is used within a [List].
+/// a payload. The name is absent when it is used within a [`Tag::List`].
 ///
 /// The tag `TAG_End` is not available because it is handled by the program.
 #[derive(Clone, Debug, PartialEq)]
+#[repr(u8)]
 pub enum Tag {
     /// A signed integral type. Sometimes used for booleans.
-    Byte(Name, i8),
+    Byte(Name, i8) = 1,
 
     /// A signed integral type.
-    Short(Name, i16),
+    Short(Name, i16) = 2,
 
     /// A signed intefral type.
-    Int(Name, i32),
+    Int(Name, i32) = 3,
 
     /// A signed integral type.
-    Long(Name, i64),
+    Long(Name, i64) = 4,
 
     /// A signed floating point type.
-    Float(Name, f32),
+    Float(Name, f32) = 5,
 
     /// A signed floating point type.
-    Double(Name, f64),
+    Double(Name, f64) = 6,
 
     /// An array of bytes.
-    ByteArray(Name, Vec<i8>),
+    ByteArray(Name, Vec<i8>) = 7,
 
     /// A UTF-8 string.
-    String(Name, String),
+    String(Name, String) = 8,
 
     /// A list of tag payloads, without tag IDs or names.
-    List(Name, Vec<Tag>),
+    List(Name, Vec<Tag>) = 9,
 
     /// A list of fully formed tags, including their IDs, names, and payloads.
-    Compound(Name, Vec<Tag>),
+    Compound(Name, Vec<Tag>) = 10,
 
     /// An array of [Tag::Int]s.
-    IntArray(Name, Vec<i32>),
+    IntArray(Name, Vec<i32>) = 11,
 
     /// An array of [Tag::Long]s.
-    LongArray(Name, Vec<i64>),
+    LongArray(Name, Vec<i64>) = 12,
 }
 
 impl Tag {
@@ -145,6 +146,7 @@ impl Tag {
 
             Tag::List(_, payload) => {
                 // tag ID
+                // FIXME: what if list contains no data? default to Tag::Byte or error
                 if let Some(first) = payload.first() {
                     buf.extend(first.bytes_id(byte_order));
                 }
@@ -223,5 +225,441 @@ impl Tag {
 macro_rules! nbt {
     ($($data:expr),* $(,)?) => {
         Tag::Compound(Some(String::new()), vec![$($data),*])
+    };
+}
+
+/// Quick way of creating a [`Tag::Byte`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, byte};
+///
+/// assert_eq!(
+///     byte!(42),
+///     Tag::Byte(None, 42)
+/// );
+///
+/// assert_eq!(
+///     byte!("The answer" => 42),
+///     Tag::Byte(Some("The answer".to_string()), 42)
+/// );
+/// ```
+#[macro_export]
+macro_rules! byte {
+    ($name:expr => $value:expr $(,)?) => {
+        Tag::Byte(Some(String::from($name)), $value)
+    };
+
+    ($value:expr $(,)?) => {
+        Tag::Byte(None, $value)
+    };
+}
+
+/// Quick way of creating a [`Tag::Short`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, short};
+///
+/// assert_eq!(
+///     short!(42),
+///     Tag::Short(None, 42)
+/// );
+///
+/// assert_eq!(
+///     short!("The answer" => 42),
+///     Tag::Short(Some("The answer".to_string()), 42)
+/// );
+/// ```
+#[macro_export]
+macro_rules! short {
+    ($name:expr => $value:expr $(,)?) => {
+        Tag::Short(Some(String::from($name)), $value)
+    };
+
+    ($value:expr $(,)?) => {
+        Tag::Short(None, $value)
+    };
+}
+
+/// Quick way of creating a [`Tag::Int`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, int};
+///
+/// assert_eq!(
+///     int!(42),
+///     Tag::Int(None, 42)
+/// );
+///
+/// assert_eq!(
+///     int!("The answer" => 42),
+///     Tag::Int(Some("The answer".to_string()), 42)
+/// );
+/// ```
+#[macro_export]
+macro_rules! int {
+    ($name:expr => $value:expr $(,)?) => {
+        Tag::Int(Some(String::from($name)), $value)
+    };
+
+    ($value:expr $(,)?) => {
+        Tag::Int(None, $value)
+    };
+}
+
+/// Quick way of creating a [`Tag::Long`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, long};
+///
+/// assert_eq!(
+///     long!(42),
+///     Tag::Long(None, 42)
+/// );
+///
+/// assert_eq!(
+///     long!("The answer" => 42),
+///     Tag::Long(Some("The answer".to_string()), 42)
+/// );
+/// ```
+#[macro_export]
+macro_rules! long {
+    ($name:expr => $value:expr $(,)?) => {
+        Tag::Long(Some(String::from($name)), $value)
+    };
+
+    ($value:expr $(,)?) => {
+        Tag::Long(None, $value)
+    };
+}
+
+/// Quick way of creating a [`Tag::Float`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, float};
+///
+/// assert_eq!(
+///     float!(42.69),
+///     Tag::Float(None, 42.69)
+/// );
+///
+/// assert_eq!(
+///     float!("The answer" => 42.69),
+///     Tag::Float(Some("The answer".to_string()), 42.69)
+/// );
+/// ```
+#[macro_export]
+macro_rules! float {
+    ($name:expr => $value:expr $(,)?) => {
+        Tag::Float(Some(String::from($name)), $value)
+    };
+
+    ($value:expr $(,)?) => {
+        Tag::Float(None, $value)
+    };
+}
+
+/// Quick way of creating a [`Tag::Double`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, double};
+///
+/// assert_eq!(
+///     double!(42.69),
+///     Tag::Double(None, 42.69)
+/// );
+///
+/// assert_eq!(
+///     double!("The answer" => 42.69),
+///     Tag::Double(Some("The answer".to_string()), 42.69)
+/// );
+/// ```
+#[macro_export]
+macro_rules! double {
+    ($name:expr => $value:expr $(,)?) => {
+        Tag::Double(Some(String::from($name)), $value)
+    };
+
+    ($value:expr $(,)?) => {
+        Tag::Double(None, $value)
+    };
+}
+
+/// Quick way of creating a [`Tag::ByteArray`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, byte_array};
+///
+/// assert_eq!(
+///     byte_array!(1, 2, 3),
+///     Tag::ByteArray(None, vec![1, 2, 3])
+/// );
+///
+/// assert_eq!(
+///     byte_array!("The answer" => 1, 2, 3),
+///     Tag::ByteArray(Some("The answer".to_string()), vec![1, 2, 3])
+/// );
+/// ```
+#[macro_export]
+macro_rules! byte_array {
+    ($name:expr => $($value:expr),* $(,)?) => {
+        Tag::ByteArray(Some(String::from($name)), vec![$($value),*])
+    };
+
+    ($($value:expr),* $(,)?) => {
+        Tag::ByteArray(None, vec![$($value),*])
+    };
+}
+
+/// Quick way of creating a [`Tag::String`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, string};
+///
+/// assert_eq!(
+///     string!("The name"),
+///     Tag::String(None, "The name".to_string())
+/// );
+///
+/// assert_eq!(
+///     string!("The answer" => "The name"),
+///     Tag::String(Some("The answer".to_string()), "The name".to_string())
+/// );
+/// ```
+#[macro_export]
+macro_rules! string {
+    ($name:expr => $value:expr $(,)?) => {
+        Tag::String(Some(String::from($name)), String::from($value))
+    };
+
+    ($value:expr $(,)?) => {
+        Tag::String(None, String::from($value))
+    };
+}
+
+/// Quick way of creating a [`Tag::List`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, byte, list};
+///
+/// assert_eq!(
+///     list!(byte!(1), byte!(2), byte!(3)),
+///     Tag::List(
+///         None,
+///         vec![
+///             Tag::Byte(None, 1),
+///             Tag::Byte(None, 2),
+///             Tag::Byte(None, 3)
+///         ]
+///     )
+/// );
+///
+/// assert_eq!(
+///     list!("The answer" => byte!(1), byte!(2), byte!(3)),
+///     Tag::List(
+///         Some("The answer".to_string()),
+///         vec![
+///             Tag::Byte(None, 1),
+///             Tag::Byte(None, 2),
+///             Tag::Byte(None, 3),
+///         ]
+///     )
+/// );
+/// ```
+///
+/// This macro also has a shorthand for initializing a list with signed integers.
+///
+/// ```rust
+/// use mcnbt::{Tag, list};
+///
+/// assert_eq!(
+///     list!("The answer" => i8; 1, 2, 3),
+///     Tag::List(
+///         Some("The answer".to_string()),
+///         vec![
+///             Tag::Byte(None, 1),
+///             Tag::Byte(None, 2),
+///             Tag::Byte(None, 3),
+///         ]
+///     )
+/// );
+/// ```
+///
+/// You can use [`i8`], [`i16`], [`i32`] and [`i64`] to create the appropiate
+/// [`Tag`]s.
+#[macro_export]
+macro_rules! list {
+    ($name:expr => $($value:expr),* $(,)?) => {
+        Tag::List(Some(String::from($name)), vec![$($value),*])
+    };
+
+    ($name:expr => $kind:ty; $($value:expr),* $(,)?) => {
+        {
+            macro_rules! eq_type {
+                ($x:ty, $y:ty) => {{
+                    use std::any::TypeId;
+                    TypeId::of::<$x>() == TypeId::of::<$y>()
+                }};
+            }
+
+            let mut data = vec![];
+            $(
+                data.push(
+                    if eq_type!(i8, $kind) {
+                        Tag::Byte(None, $value)
+                    } else if eq_type!(i16, $kind) {
+                        Tag::Short(None, $value)
+                    } else if eq_type!(i32, $kind) {
+                        Tag::Int(None, $value)
+                    } else if eq_type!(i64, $kind) {
+                        Tag::Long(None, $value)
+                    /*
+                    NOTE: not possible due to type validation at compile tim
+
+                    } else if eq_type!(f32, $kind) {
+                        Tag::Float(None, $value)
+                    } else if eq_type!(f64, $kind) {
+                        Tag::Double(None, $value)
+                    } else if eq_type!(String, $kind) {
+                        Tag::String(None, String::from($value))
+                    */
+                    } else {
+                        unimplemented!("{} is an invalid type", std::any::type_name::<$kind>())
+                    }
+                );
+            )*
+            Tag::List(Some(String::from($name)), data)
+        }
+    };
+
+    ($($value:expr),* $(,)?) => {
+        Tag::List(None, vec![$($value),*])
+    };
+}
+
+/// Quick way of creating a [`Tag::Compound`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, byte, compound, string};
+///
+/// assert_eq!(
+///     compound!(
+///         byte!("x" => 1),
+///         byte!("y" => 2),
+///         byte!("z" => 3),
+///         string!("player_name" => "Steve"),
+///     ),
+///     Tag::Compound(
+///         None,
+///         vec![
+///             Tag::Byte(Some("x".to_string()), 1),
+///             Tag::Byte(Some("y".to_string()), 2),
+///             Tag::Byte(Some("z".to_string()), 3),
+///             Tag::String(Some("player_name".to_string()), "Steve".to_string()),
+///         ]
+///     )
+/// );
+///
+/// assert_eq!(
+///     compound!("The answer" =>
+///         byte!("x" => 1),
+///         byte!("y" => 2),
+///         byte!("z" => 3),
+///         string!("player_name" => "Steve"),
+///     ),
+///     Tag::Compound(
+///         Some("The answer".to_string()),
+///         vec![
+///             Tag::Byte(Some("x".to_string()), 1),
+///             Tag::Byte(Some("y".to_string()), 2),
+///             Tag::Byte(Some("z".to_string()), 3),
+///             Tag::String(Some("player_name".to_string()), "Steve".to_string()),
+///         ]
+///     )
+/// );
+/// ```
+#[macro_export]
+macro_rules! compound {
+    ($name:expr => $($value:expr),* $(,)?) => {
+        Tag::Compound(Some(String::from($name)), vec![$($value),*])
+    };
+
+    ($($value:expr),* $(,)?) => {
+        Tag::Compound(None, vec![$($value),*])
+    };
+}
+
+/// Quick way of creating a [`Tag::IntArray`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, int_array};
+///
+/// assert_eq!(
+///     int_array!(1, 2, 3),
+///     Tag::IntArray(None, vec![1, 2, 3])
+/// );
+///
+/// assert_eq!(
+///     int_array!("The answer" => 1, 2, 3),
+///     Tag::IntArray(Some("The answer".to_string()), vec![1, 2, 3])
+/// );
+/// ```
+#[macro_export]
+macro_rules! int_array {
+    ($name:expr => $($value:expr),* $(,)?) => {
+        Tag::IntArray(Some(String::from($name)), vec![$($value),*])
+    };
+
+    ($($value:expr),* $(,)?) => {
+        Tag::IntArray(None, vec![$($value),*])
+    };
+}
+
+/// Quick way of creating a [`Tag::LongArray`].
+///
+/// # Example
+///
+/// ```rust
+/// use mcnbt::{Tag, long_array};
+///
+/// assert_eq!(
+///     long_array!(1, 2, 3),
+///     Tag::LongArray(None, vec![1, 2, 3])
+/// );
+///
+/// assert_eq!(
+///     long_array!("The answer" => 1, 2, 3),
+///     Tag::LongArray(Some("The answer".to_string()), vec![1, 2, 3])
+/// );
+/// ```
+#[macro_export]
+macro_rules! long_array {
+    ($name:expr => $($value:expr),* $(,)?) => {
+        Tag::LongArray(Some(String::from($name)), vec![$($value),*])
+    };
+
+    ($($value:expr),* $(,)?) => {
+        Tag::LongArray(None, vec![$($value),*])
     };
 }
