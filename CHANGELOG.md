@@ -2,6 +2,11 @@
 
 ## [unreleased]
 
+### Fixed
+
+- Empty lists now use end tag as the type.
+
+
 ## [1.0.0] - 2023-10-27
 
 ### Added

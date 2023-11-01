@@ -17,6 +17,17 @@ fn main() {
     println!("Pretty\n{:#?}", structure);
 
     // using macros
+    let structure = mcnbt::nbt![
+        mcnbt::list!("foo" => mcnbt::int!(1), mcnbt::int!(2), mcnbt::int!(3)),
+        mcnbt::compound!("bar" =>
+            mcnbt::byte!("x" => 1),
+            mcnbt::byte!("y" => 2),
+            mcnbt::byte!("z" => 3),
+        ),
+        mcnbt::string!("hello" => "world"),
+        mcnbt::int_array!("baz" => 10, 20, 30),
+    ];
 
-    // TODO
+    println!("Bytes\n{:#?}", structure.to_bytes(ByteOrder::LittleEndian));
+    println!("Pretty\n{:#?}", structure);
 }

@@ -211,13 +211,17 @@ fn list(mut i: &[u8], byte_order: ByteOrder) -> IResult<&[u8], Tag> {
 
 fn list_payload(mut i: &[u8], byte_order: ByteOrder) -> IResult<&[u8], Vec<Tag>> {
     let tag_id;
-    (i, tag_id) = id(i, false)?;
+    (i, tag_id) = id(i, true)?;
 
     let length;
     (i, length) = match byte_order {
         ByteOrder::BigEndian => be_i32(i)?,
         ByteOrder::LittleEndian => le_i32(i)?,
     };
+
+    if tag_id == 0 {
+        return Ok((i, vec![]));
+    }
 
     let mut tags: Vec<Tag> = vec![];
     for _ in 0..length {
@@ -566,6 +570,17 @@ mod test {
                 Some("foo".to_string()),
                 vec![Tag::Byte(None, 1), Tag::Byte(None, 2), Tag::Byte(None, 3)],
             );
+            assert_eq!(
+                nbt(data.to_bytes(byte_order).unwrap().as_slice(), byte_order).unwrap(),
+                (b"".as_slice(), data)
+            );
+        }
+    }
+
+    #[test]
+    fn empty_list() {
+        for byte_order in [ByteOrder::BigEndian, ByteOrder::LittleEndian] {
+            let data = Tag::List(Some("foo".to_string()), vec![]);
             assert_eq!(
                 nbt(data.to_bytes(byte_order).unwrap().as_slice(), byte_order).unwrap(),
                 (b"".as_slice(), data)

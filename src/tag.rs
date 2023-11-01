@@ -146,9 +146,9 @@ impl Tag {
 
             Tag::List(_, payload) => {
                 // tag ID
-                // FIXME: what if list contains no data? default to Tag::Byte or error
-                if let Some(first) = payload.first() {
-                    buf.extend(first.bytes_id(byte_order));
+                match payload.first() {
+                    Some(first) => buf.extend(first.bytes_id(byte_order)),
+                    None => buf.extend(byte_order.bytes(0_i8)),
                 }
 
                 // length of list
