@@ -54,6 +54,25 @@ println!("{:#?}", tag.to_bytes(ByteOrder::LittleEndian));
 ```
 
 
+## Using the CLI
+
+```console
+cargo install mcnbt
+```
+
+```
+Usage: nbt [OPTIONS] <path>
+
+Arguments:
+  <path>  The path to the NBT file
+
+Options:
+  -L, --little-endian  Use little endian byte order
+  -h, --help           Print help
+  -V, --version        Print version
+```
+
+
 ## Resources
 
 - <https://wiki.vg/NBT>

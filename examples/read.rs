@@ -5,10 +5,10 @@ fn main() -> Result<(), errors::Error> {
         include_bytes!("hello_world.nbt"), // file to read
         ByteOrder::BigEndian,              // Java Edition uses big endian byte order
     )?;
-    println!("{:#?}", tag);
+    println!("{}", tag.pretty());
 
     let tag = Tag::from_bytes(include_bytes!("bigtest.nbt"), ByteOrder::BigEndian)?;
-    println!("{:#?}", tag);
+    println!("{}", tag.pretty());
 
     Ok(())
 }

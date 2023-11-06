@@ -1,5 +1,3 @@
-// TODO: improve/implement custom errors
-
 use nom::bytes::complete::*;
 use nom::combinator::eof;
 use nom::error::{make_error, ErrorKind};
@@ -25,7 +23,6 @@ fn name(mut i: &[u8], byte_order: ByteOrder) -> IResult<&[u8], String> {
     let name: String = {
         let res = take(name_len)(i)?;
         i = res.0;
-        // TODO: provide error
         mutf8::decode(res.1)
             .map_err(|_| nom::Err::Failure(make_error(i, ErrorKind::Fail)))?
             .to_string()
@@ -195,7 +192,9 @@ fn string_payload(mut i: &[u8], byte_order: ByteOrder) -> IResult<&[u8], String>
     };
     let bytes;
     (i, bytes) = take_while_m_n(0, length.into(), |_| true)(i)?;
-    let s = mutf8::decode(bytes).expect("TODO").to_string();
+    let s = mutf8::decode(bytes)
+        .map_err(|_| nom::Err::Failure(make_error(i, ErrorKind::Fail)))?
+        .to_string();
     Ok((i, s))
 }
 

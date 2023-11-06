@@ -9,7 +9,13 @@ license = "MIT"
 keywords = ["minecraft", "nbt", "parser"]
 categories = []
 
+[[bin]]
+name = "nbt"
+path = "src/cli.rs"
+required-features = ["cli", "read"]
+
 [dependencies]
+clap = {version = "4.4.7", optional = true}
 nom = {version = "7.1.3", optional = true}
 num-traits = "0.2.17"
 residua-mutf8 = "2.0.0"
@@ -17,4 +23,5 @@ thiserror = "1.0.50"
 
 [features]
 default = ["read"]
+cli = ["clap"]
 read = ["nom"]

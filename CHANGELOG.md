@@ -2,6 +2,18 @@
 
 ## [unreleased]
 
+### Added
+
+- Add CLI.
+- Add `mcnbt::tag::Tag::pretty` function.
+- Add `mcnbt::tag::Tag::name` function.
+- Add `mcnbt::tag::INDENT` constant.
+- Add `mcnbt::tag::ABBREVIATE_ARRAY_SIZE` constant.
+
+### Changed
+
+- Improve errors.
+
 ### Fixed
 
 - Empty lists now use end tag as the type.

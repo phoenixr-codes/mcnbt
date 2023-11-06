@@ -14,7 +14,7 @@ fn main() {
     );
 
     println!("Bytes\n{:#?}", structure.to_bytes(ByteOrder::LittleEndian));
-    println!("Pretty\n{:#?}", structure);
+    println!("Pretty\n{}", structure.pretty());
 
     // using macros
     let structure = mcnbt::nbt![
@@ -29,5 +29,5 @@ fn main() {
     ];
 
     println!("Bytes\n{:#?}", structure.to_bytes(ByteOrder::LittleEndian));
-    println!("Pretty\n{:#?}", structure);
+    println!("Pretty\n{}", structure.pretty());
 }

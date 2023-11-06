@@ -19,4 +19,11 @@ pub enum Error {
 
     #[error("the amount of tags of the long array must not exceed {}", i32::MAX)]
     LongArrayTooBig,
+
+    // TODO: improve this
+    #[error("failed to parse NBT")]
+    ParseError(nom::error::ErrorKind),
+
+    #[error("NBT is incomplete")]
+    Incomplete(nom::Needed),
 }

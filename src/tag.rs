@@ -1,6 +1,11 @@
 use crate::byte_order::ByteOrder;
 use crate::errors::Error;
-use crate::parser;
+
+/// Maximum amount of items in an array that are used for pretty formatting.
+pub const ABBREVIATE_ARRAY_SIZE: u64 = 50;
+
+/// String inserted in front of nested items for pretty formatting.
+pub const INDENT: &'static str = "   "; // three spaces
 
 pub type Name = Option<String>;
 
@@ -61,7 +66,201 @@ impl Tag {
     /// Returns a tag from bytes.
     #[cfg(feature = "read")]
     pub fn from_bytes(bytes: &[u8], byte_order: ByteOrder) -> Result<Self, Error> {
-        Ok(parser::nbt(bytes, byte_order).expect("TODO").1)
+        Ok(crate::parser::nbt(bytes, byte_order)
+            .map_err(|e| match e {
+                nom::Err::Incomplete(needed) => Error::Incomplete(needed),
+                nom::Err::Error(e) | nom::Err::Failure(e) => Error::ParseError(e.code),
+            })?
+            .1)
+    }
+
+    /// Returns tag's name.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use mcnbt::Tag;
+    ///
+    /// assert_eq!(
+    ///     Tag::Byte(Some("foo".to_string()), 42).name(),
+    ///     "TAG_Byte"
+    /// );
+    pub fn name(&self) -> &'static str {
+        match self {
+            Tag::Byte(_, _) => "TAG_Byte",
+            Tag::Short(_, _) => "TAG_Short",
+            Tag::Int(_, _) => "TAG_Int",
+            Tag::Long(_, _) => "TAG_Long",
+            Tag::Float(_, _) => "TAG_Float",
+            Tag::Double(_, _) => "TAG_Double",
+            Tag::ByteArray(_, _) => "TAG_Byte_Array",
+            Tag::String(_, _) => "TAG_String",
+            Tag::List(_, _) => "TAG_List",
+            Tag::Compound(_, _) => "TAG_Compound",
+            Tag::IntArray(_, _) => "TAG_Int_Array",
+            Tag::LongArray(_, _) => "TAG_Long_Array",
+        }
+    }
+
+    /// Returns a pretty representation of the tag.
+    ///
+    /// The format matches the style used in the original specification and in
+    /// many other NBT parsers with two different: tags that store an array of
+    /// values will be abbreviated if its length is greater than
+    /// [ABBREVIATE_ARRAY_SIZE] and if the name is not present `(None)` is omitted.
+    pub fn pretty(&self) -> String {
+        let mut result = String::new();
+        match self {
+            Tag::Byte(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {}", payload));
+            }
+            Tag::Short(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {}", payload));
+            }
+            Tag::Int(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {}", payload));
+            }
+            Tag::Long(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {}", payload));
+            }
+            Tag::Float(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {}", payload));
+            }
+            Tag::Double(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {}", payload));
+            }
+            Tag::ByteArray(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {} entries\n{{\n", payload.len()));
+                let mut bytes = payload.into_iter();
+                for _ in 0..ABBREVIATE_ARRAY_SIZE {
+                    match bytes.next() {
+                        Some(value) => {
+                            result.push_str(INDENT);
+                            result.push_str(&value.to_string());
+                            result.push('\n');
+                        }
+                        None => break,
+                    }
+                }
+                let remaining = bytes.len();
+                if remaining != 0 {
+                    result.push_str(&format!("{}[and {} more]\n", INDENT, remaining));
+                }
+                result.push('}');
+            }
+            Tag::String(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": '{}'", payload));
+            }
+            Tag::List(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {} entries\n{{\n", payload.len()));
+                for tag in payload {
+                    for line in tag.pretty().lines() {
+                        result.push_str(INDENT);
+                        result.push_str(&line);
+                        result.push('\n');
+                    }
+                }
+                result.push('}');
+            }
+            Tag::Compound(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {} entries\n{{\n", payload.len()));
+                for tag in payload {
+                    for line in tag.pretty().lines() {
+                        result.push_str(INDENT);
+                        result.push_str(&line);
+                        result.push('\n');
+                    }
+                }
+                result.push('}');
+            }
+            Tag::IntArray(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {} entries\n{{\n", payload.len()));
+                let mut ints = payload.into_iter();
+                for _ in 0..ABBREVIATE_ARRAY_SIZE {
+                    match ints.next() {
+                        Some(value) => {
+                            result.push_str(INDENT);
+                            result.push_str(&value.to_string());
+                            result.push('\n');
+                        }
+                        None => break,
+                    }
+                }
+                let remaining = ints.len();
+                if remaining != 0 {
+                    result.push_str(&format!("{}[and {} more]\n", INDENT, remaining));
+                }
+                result.push('}');
+            }
+            Tag::LongArray(name, payload) => {
+                result.push_str(self.name());
+                if let Some(value) = name {
+                    result.push_str(&format!("(\"{}\")", value));
+                };
+                result.push_str(&format!(": {} entries\n{{\n", payload.len()));
+                let mut longs = payload.into_iter();
+                for _ in 0..ABBREVIATE_ARRAY_SIZE {
+                    match longs.next() {
+                        Some(value) => {
+                            result.push_str(INDENT);
+                            result.push_str(&value.to_string());
+                            result.push('\n');
+                        }
+                        None => break,
+                    }
+                }
+                let remaining = longs.len();
+                if remaining != 0 {
+                    result.push_str(&format!("{}[and {} more]\n", INDENT, remaining));
+                }
+                result.push('}');
+            }
+        }
+        result
     }
 
     /// Returns a vector of bytes with the length of the name and the name
