@@ -60,7 +60,7 @@ println!("{:#?}", tag.to_bytes(ByteOrder::LittleEndian));
 cargo install mcnbt
 ```
 
-```
+```text
 Usage: nbt [OPTIONS] <path>
 
 Arguments:
@@ -73,9 +73,89 @@ Options:
 ```
 
 
+## Using `serde`
+
+```console
+cargo add -F serde mcnbt
+```
+
+```rust
+use mcnbt::Tag;
+use serde_json::Value;
+
+let data = Tag::Compound(
+    Some("".to_string()),
+    vec![
+        Tag::String(
+            Some("foo".to_string()),
+            "Hello World".to_string()
+        ),
+        Tag::List(
+            Some("bar".to_string()),
+            vec![
+                Tag::Byte(None, 1),
+                Tag::Byte(None, 2),
+                Tag::Byte(None, 3),
+            ]
+        )
+    ]
+);
+
+assert_eq!(
+    serde_json::to_string(&data).unwrap(),
+    serde_json::to_string(
+        &serde_json::json!({
+            "type": "compound",
+            "name": "",
+            "payload": [
+                {
+                    "type": "string",
+                    "name": "foo",
+                    "payload": "Hello World"
+                },
+                {
+                    "type": "list",
+                    "name": "bar",
+                    "payload": [
+                        {
+                            "type": "byte",
+                            "name": null,
+                            "payload": 1
+                        },
+                        {
+                            "type": "byte",
+                            "name": null,
+                            "payload": 2
+                        },
+                        {
+                            "type": "byte",
+                            "name": null,
+                            "payload": 3
+                        }
+                    ]
+                }
+            ]
+        })
+    ).unwrap()
+);
+```
+
+
 ## Resources
+
+Here are some websites explaining the NBT file format that have been used for the
+development of this library.
 
 - <https://wiki.vg/NBT>
 - <https://minecraft.wiki/w/NBT_format#Binary_format>
 - <https://wiki.bedrock.dev/nbt/nbt-in-depth.html>
 
+
+## Contributing
+
+### Running Tests
+
+```console
+cargo test --all-features
+#          ^^^^^^^^^^^^^^ important
+```

@@ -1,5 +1,7 @@
 use crate::byte_order::ByteOrder;
 use crate::errors::Error;
+#[cfg(feature = "serde")]
+use serde::ser::SerializeMap;
 
 /// Maximum amount of items in an array that are used for pretty formatting.
 pub const ABBREVIATE_ARRAY_SIZE: u64 = 50;
@@ -51,6 +53,79 @@ pub enum Tag {
 
     /// An array of [Tag::Long]s.
     LongArray(Name, Vec<i64>) = 12,
+}
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for Tag {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut map = serializer.serialize_map(Some(2))?;
+        match self {
+            Tag::Byte(name, payload) => {
+                map.serialize_entry("type", "byte")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::Short(name, payload) => {
+                map.serialize_entry("type", "short")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::Int(name, payload) => {
+                map.serialize_entry("type", "int")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::Long(name, payload) => {
+                map.serialize_entry("type", "long")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::Float(name, payload) => {
+                map.serialize_entry("type", "float")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::Double(name, payload) => {
+                map.serialize_entry("type", "double")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::ByteArray(name, payload) => {
+                map.serialize_entry("type", "byte_array")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::String(name, payload) => {
+                map.serialize_entry("type", "string")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::List(name, payload) => {
+                map.serialize_entry("type", "list")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::Compound(name, payload) => {
+                map.serialize_entry("type", "compound")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::IntArray(name, payload) => {
+                map.serialize_entry("type", "int_array")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+            Tag::LongArray(name, payload) => {
+                map.serialize_entry("type", "long_array")?;
+                map.serialize_entry("name", name)?;
+                map.serialize_entry("payload", payload)?;
+            }
+        };
+        map.end()
+    }
 }
 
 impl Tag {

@@ -5,6 +5,7 @@
 ### Added
 
 - Add CLI.
+- Add deserialization support.
 - Add `mcnbt::tag::Tag::pretty` function.
 - Add `mcnbt::tag::Tag::name` function.
 - Add `mcnbt::tag::INDENT` constant.
