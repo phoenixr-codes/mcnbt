@@ -1,4 +1,4 @@
-import init, { explore, ping } from './pkg/mcnbt_web.js';
+import init, { explore } from './pkg/mcnbt_web.js';
 
 function dom(tag) {
   const elemRoot = document.createElement("blockquote");
