@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'Roboto Mono';
-  src: url('/assets/fonts/RobotoMono-Regular.ttf');
+  src: url('/../assets/fonts/RobotoMono-Regular.ttf');
   font-style: normal;
   font-weight: 400;
   font-display: swap;
