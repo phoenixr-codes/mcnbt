@@ -2,8 +2,9 @@
 
 Read and write NBT files.
 
-[![docs.rs](https://img.shields.io/docsrs/mcnbt/latest)](https://docs.rs/mcnbt/latest/mcnbt/)
-[![Crates.io](https://img.shields.io/crates/v/mcnbt)](https://crates.io/crates/mcnbt)
+[![docs.rs](https://img.shields.io/docsrs/mcnbt/latest?style=for-the-badge)](https://docs.rs/mcnbt/latest/mcnbt/)
+[![Crates.io](https://img.shields.io/crates/v/mcnbt?style=for-the-badge)](https://crates.io/crates/mcnbt)
+[![Website](https://img.shields.io/badge/Website-NBT_Explorer-blue?style=for-the-badge)](https://github.com/phoenixr-codes/mcnbt/tree/master/web)
 
 
 ## Installation
@@ -77,6 +78,8 @@ Options:
 
 The `web` directory conatains a web interface which uses `mcnbt` in the back-end.
 See it in action [here](https://phoenixr-codes.github.io/mcnbt/).
+
+![Preview](./web/preview.png)
 
 
 ## Using `serde`

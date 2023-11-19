@@ -2,6 +2,10 @@
 
 A NBT explorer for the web which makes use of the [mcnbt] crate.
 
+[![](https://img.shields.io/badge/Show_Website-blue?style=for-the-badge)](https://phoenixr-codes.github.io/mcnbt/)
+
+![Preview](./preview.png)
+
 
 ## Build Manually
 
@@ -22,7 +26,7 @@ cd mcnbt/web
 
 ### Launch
 
-Then run a server which serves the `site` directory by using [Python's `http.server`] or
+Then run a server which serves the `site` directory by using a tool like [Python's `http.server`] or
 [Vercel's `serve`]:
 
 ```console
