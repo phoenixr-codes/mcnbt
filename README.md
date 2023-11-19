@@ -73,6 +73,12 @@ Options:
 ```
 
 
+## Using the Web
+
+The `web` directory conatains a web interface which uses `mcnbt` in the back-end.
+See it in action [here](https://phoenixr-codes.github.io/mcnbt/).
+
+
 ## Using `serde`
 
 ```console
