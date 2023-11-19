@@ -1,2 +1,4 @@
 /target
 /Cargo.lock
+/web/site/pkg/
+/web/Cargo.lock

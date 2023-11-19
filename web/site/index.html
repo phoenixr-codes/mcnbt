@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link href="style.css" rel="stylesheet" />
+    <script defer type="module" src="script.js"></script>
+  </head>
+  <body>
+    <h1>NBT Explorer</h1>
+    <p>
+      Upload a file below and choose the right byte order. This is usually "Little Endian" for Minecraft:
+      Bedrock Edition and "Big Endian" for Minecraft: Java Edition. This website uses the
+      <a href="https://github.com/phoenixr-codes/mcnbt">mcnbt</a> library written in Rust.
+    </p>
+    <form id="form">
+      <fieldset>
+        <label for="nbt-file">Select an NBT file</label>
+        <input id="nbt-file" type="file" required />
+
+        <label>
+          <input id="little-endian" type="radio" name="byte-order" value="little-endian" required />
+          Little Endian
+        </label>
+
+        <label>
+          <input id="big-endian" type="radio" name="byte-order" value="big-endian" checked />
+          Big Endian
+        </label>
+
+        <input type="submit" />
+      </fieldset>
+    </form>
+  </body>
+</html>

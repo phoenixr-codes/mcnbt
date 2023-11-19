@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('/assets/fonts/RobotoMono-Regular.ttf');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --primary: white;
+  --secondary: #333;
+  --tertiary: #ea69a3;
+}
+
+* {
+  font-family: 'Roboto Mono' !important;
+}
+
+body {
+  background-color: var(--secondary);
+  color: var(--primary);
+}
+
+a {
+  color: var(--tertiary);
+}
+
+a:visited {
+  color: color-mix(in oklab, var(--tertiary), #777);
+}
+
+blockquote > :not(blockquote) {
+  margin: auto 5px;
+}
+
+.nbt-type-number {
+  color: cyan;
+}
+
+.nbt-type-string {
+  color: lime;
+}

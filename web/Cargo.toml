@@ -1,0 +1,18 @@
+[package]
+name = "mcnbt-web"
+version = "0.1.0"
+authors = ["Jonas da Silva"]
+edition = "2018"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+mcnbt = { git = "https://github.com/phoenixr-codes/mcnbt.git", rev = "07480ff", features = ["serde"] }
+wasm-bindgen = "0.2.84"
+js-sys = "0.3.65"
+gloo-utils = { version = "0.2.0", features = ["serde"] }
+
+[profile.release]
+opt-level = "s"
