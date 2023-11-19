@@ -10,7 +10,7 @@ function dom(tag) {
   const payload = tag.payload;
 
   elemIcon.classList.add("nbt-icon");
-  elemIcon.setAttribute("src", `/../assets/icons/${type}.png`);
+  elemIcon.setAttribute("src", `./assets/icons/${type}.png`);
   elemIcon.setAttribute("alt", type);
 
   let elemPayload;
