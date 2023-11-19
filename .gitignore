@@ -2,3 +2,5 @@
 /Cargo.lock
 /web/site/pkg/
 /web/Cargo.lock
+/web/target/
+/web/wasm-pack.log
