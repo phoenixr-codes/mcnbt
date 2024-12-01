@@ -1,5 +1,17 @@
 # Changelog
 
+## [unreleased]
+
+### Added
+
+- Add `mcnbt::tag::pretty_truncated` function.
+
+### Removed
+
+- **BREAKING**: Remove `mcnbt::tag::ABBREVIATE_ARRAY_SIZE` constant.
+- **BREAKING**: Made `mcnbt::tag::INDENT` constant private.
+
+
 ## [1.1.0] - 2023-11-19
 
 ### Added

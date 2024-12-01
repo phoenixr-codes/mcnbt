@@ -3,11 +3,8 @@ use crate::errors::Error;
 #[cfg(feature = "serde")]
 use serde::ser::SerializeMap;
 
-/// Maximum amount of items in an array that are used for pretty formatting.
-pub const ABBREVIATE_ARRAY_SIZE: u64 = 50;
-
 /// String inserted in front of nested items for pretty formatting.
-pub const INDENT: &'static str = "   "; // three spaces
+const INDENT: &'static str = "   "; // three spaces
 
 pub type Name = Option<String>;
 
@@ -184,6 +181,10 @@ impl Tag {
     /// values will be abbreviated if its length is greater than
     /// [ABBREVIATE_ARRAY_SIZE] and if the name is not present `(None)` is omitted.
     pub fn pretty(&self) -> String {
+        self.pretty_truncated(50)
+    }
+
+    pub fn pretty_truncated(&self, truncate: u64) -> String {
         let mut result = String::new();
         match self {
             Tag::Byte(name, payload) => {
@@ -235,7 +236,7 @@ impl Tag {
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
                 let mut bytes = payload.into_iter();
-                for _ in 0..ABBREVIATE_ARRAY_SIZE {
+                for i in 1.. {
                     match bytes.next() {
                         Some(value) => {
                             result.push_str(INDENT);
@@ -243,6 +244,9 @@ impl Tag {
                             result.push('\n');
                         }
                         None => break,
+                    }
+                    if i == truncate {
+                        break;
                     }
                 }
                 let remaining = bytes.len();
@@ -264,13 +268,27 @@ impl Tag {
                     result.push_str(&format!("(\"{}\")", value));
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
-                for tag in payload {
-                    for line in tag.pretty().lines() {
-                        result.push_str(INDENT);
-                        result.push_str(&line);
-                        result.push('\n');
+                let mut values = payload.iter();
+                for i in 1.. {
+                    match values.next() {
+                        Some(value) => {
+                            for line in value.pretty_truncated(truncate).lines() {
+                                result.push_str(INDENT);
+                                result.push_str(&line);
+                                result.push('\n');
+                            }
+                        }
+                        None => break,
+                    }
+                    if i == truncate {
+                        break;
                     }
                 }
+                let remaining = values.len();
+                if remaining != 0 {
+                    result.push_str(&format!("{}[and {} more]\n", INDENT, remaining));
+                }
+
                 result.push('}');
             }
             Tag::Compound(name, payload) => {
@@ -280,7 +298,7 @@ impl Tag {
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
                 for tag in payload {
-                    for line in tag.pretty().lines() {
+                    for line in tag.pretty_truncated(truncate).lines() {
                         result.push_str(INDENT);
                         result.push_str(&line);
                         result.push('\n');
@@ -295,7 +313,7 @@ impl Tag {
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
                 let mut ints = payload.into_iter();
-                for _ in 0..ABBREVIATE_ARRAY_SIZE {
+                for i in 1.. {
                     match ints.next() {
                         Some(value) => {
                             result.push_str(INDENT);
@@ -303,6 +321,9 @@ impl Tag {
                             result.push('\n');
                         }
                         None => break,
+                    }
+                    if i == truncate {
+                        break;
                     }
                 }
                 let remaining = ints.len();
@@ -318,7 +339,7 @@ impl Tag {
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
                 let mut longs = payload.into_iter();
-                for _ in 0..ABBREVIATE_ARRAY_SIZE {
+                for i in 1.. {
                     match longs.next() {
                         Some(value) => {
                             result.push_str(INDENT);
@@ -326,6 +347,9 @@ impl Tag {
                             result.push('\n');
                         }
                         None => break,
+                    }
+                    if i == truncate {
+                        break;
                     }
                 }
                 let remaining = longs.len();
