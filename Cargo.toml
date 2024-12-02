@@ -1,6 +1,6 @@
 [package]
 name = "mcnbt"
-version = "1.1.0"
+version = "2.0.0"
 authors = ["Jonas da Silva"]
 edition = "2021"
 description = "Read and write NBT"
