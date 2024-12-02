@@ -4,7 +4,7 @@ use crate::errors::Error;
 use serde::ser::SerializeMap;
 
 /// String inserted in front of nested items for pretty formatting.
-const INDENT: &'static str = "   "; // three spaces
+const INDENT: &str = "   "; // three spaces
 
 pub type Name = Option<String>;
 
@@ -238,7 +238,7 @@ impl Tag {
                     result.push_str(&format!("(\"{}\")", value));
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
-                let mut bytes = payload.into_iter();
+                let mut bytes = payload.iter();
                 for i in 1.. {
                     match bytes.next() {
                         Some(value) => {
@@ -277,7 +277,7 @@ impl Tag {
                         Some(value) => {
                             for line in value.pretty_truncated(truncate).lines() {
                                 result.push_str(INDENT);
-                                result.push_str(&line);
+                                result.push_str(line);
                                 result.push('\n');
                             }
                         }
@@ -303,7 +303,7 @@ impl Tag {
                 for tag in payload {
                     for line in tag.pretty_truncated(truncate).lines() {
                         result.push_str(INDENT);
-                        result.push_str(&line);
+                        result.push_str(line);
                         result.push('\n');
                     }
                 }
@@ -315,7 +315,7 @@ impl Tag {
                     result.push_str(&format!("(\"{}\")", value));
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
-                let mut ints = payload.into_iter();
+                let mut ints = payload.iter();
                 for i in 1.. {
                     match ints.next() {
                         Some(value) => {
@@ -341,7 +341,7 @@ impl Tag {
                     result.push_str(&format!("(\"{}\")", value));
                 };
                 result.push_str(&format!(": {} entries\n{{\n", payload.len()));
-                let mut longs = payload.into_iter();
+                let mut longs = payload.iter();
                 for i in 1.. {
                     match longs.next() {
                         Some(value) => {
