@@ -176,14 +176,17 @@ impl Tag {
 
     /// Returns a pretty representation of the tag.
     ///
-    /// The format matches the style used in the original specification and in
-    /// many other NBT parsers with two different: tags that store an array of
-    /// values will be abbreviated if its length is greater than
-    /// [ABBREVIATE_ARRAY_SIZE] and if the name is not present `(None)` is omitted.
+    /// See also [Tag::pretty_truncated].
     pub fn pretty(&self) -> String {
-        self.pretty_truncated(50)
+        self.pretty_truncated(0)
     }
 
+    /// Returns a pretty representation of the tag.
+    ///
+    /// `truncate` specifies the maximum amount of tags displayed
+    /// within arrays and lists. If this is 0, then arrays and
+    /// lists will not be truncated. Alternatively you can just
+    /// use [Tag::pretty].
     pub fn pretty_truncated(&self, truncate: u64) -> String {
         let mut result = String::new();
         match self {
